@@ -1,0 +1,19 @@
+{
+  "name": "canil-api",
+  "version": "1.0.0",
+  "description": "Canil API",
+  "main": "server.js",
+  "private": true,
+  "scripts": {
+    "start": "node server.js"
+  },
+  "author": "Ana",
+  "license": "nao ligo",
+  "dependencies": {
+    "boom": "^4.2.0",
+    "hapi": "^16.1.0",
+    "joi": "^10.2.2",
+    "mongojs": "^2.4.0",
+    "node-uuid": "^1.4.7"
+  }
+}
