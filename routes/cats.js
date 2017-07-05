@@ -4,136 +4,136 @@ const Joi = require('joi');
 
 exports.register = function (server, options, next) {
 
-    const db = server.app.db;
+  const db = server.app.db;
 
-    server.route({
-        method: 'GET',
-        path: '/cats',
-        handler: function (request, reply) {
+  server.route({
+    method: 'GET',
+    path: '/cats',
+    handler: function (request, reply) {
 
-            db.cats.find((err, docs) => {
+      db.cats.find((err, docs) => {
 
-                if (err) {
-                    return reply(Boom.wrap(err, 'Internal MongoDB error'));
-                }
-                reply(docs);
-            });
-
+        if (err) {
+          return reply(Boom.wrap(err, 'Internal MongoDB error'));
         }
-    });
+        reply(docs);
+      });
 
-    server.route({
-        method: 'GET',
-        path: '/cats/{id}',
-        handler: function (request, reply) {
+    }
+  });
 
-            db.cats.findOne({
-                _id: request.params.id
-            }, (err, doc) => {
+  server.route({
+    method: 'GET',
+    path: '/cats/{id}',
+    handler: function (request, reply) {
 
-                if (err) {
-                    return reply(Boom.wrap(err, 'Internal MongoDB error'));
-                }
+      db.cats.findOne({
+        _id: request.params.id
+      }, (err, doc) => {
 
-                if (!doc) {
-                    return reply(Boom.notFound());
-                }
-
-                reply(doc);
-            });
-
+        if (err) {
+          return reply(Boom.wrap(err, 'Internal MongoDB error'));
         }
-    });
 
-    server.route({
-        method: 'POST',
-        path: '/cats',
-        handler: function (request, reply) {
-
-            const cat = request.payload;
-
-            cat._id = uuid.v1();
-
-            db.cats.save(cat, (err, result) => {
-
-                if (err) {
-                    return reply(Boom.wrap(err, 'Internal MongoDB error'));
-                }
-
-                reply(cat);
-            });
-        },
-        config: {
-            validate: {
-                payload: {
-                    upper: Joi.string().min(2).max(10).required(),
-                    head: Joi.string().min(2).max(10).required(),
-                    body: Joi.string().min(2).max(10).required(),
-                    feet: Joi.string().min(2).max(10).required(),
-                }
-            }
+        if (!doc) {
+          return reply(Boom.notFound());
         }
-    });
 
-    server.route({
-        method: 'PATCH',
-        path: '/cats/{id}',
-        handler: function (request, reply) {
+        reply(doc);
+      });
 
-            db.cats.update({
-                _id: request.params.id
-            }, {
-                $set: request.payload
-            }, function (err, result) {
+    }
+  });
 
-                if (err) {
-                    return reply(Boom.wrap(err, 'Internal MongoDB error'));
-                }
+  server.route({
+    method: 'POST',
+    path: '/cats',
+    handler: function (request, reply) {
 
-                if (result.n === 0) {
-                    return reply(Boom.notFound());
-                }
+      const cat = request.payload;
 
-                reply().code(204);
-            });
-        },
-        config: {
-            validate: {
-                payload: Joi.object({
-                    upper: Joi.string().min(2).max(10).required(),
-                    head: Joi.string().min(2).max(10).required(),
-                    body: Joi.string().min(2).max(10).required(),
-                    feet: Joi.string().min(2).max(10).required(),
-                }).required().min(1)
-            }
+      cat._id = uuid.v1();
+
+      db.cats.save(cat, (err, result) => {
+
+        if (err) {
+          return reply(Boom.wrap(err, 'Internal MongoDB error'));
         }
-    });
 
-    server.route({
-        method: 'DELETE',
-        path: '/cats/{id}',
-        handler: function (request, reply) {
-
-            db.cats.remove({
-                _id: request.params.id
-            }, function (err, result) {
-
-                if (err) {
-                    return reply(Boom.wrap(err, 'Internal MongoDB error'));
-                }
-
-                if (result.n === 0) {
-                    return reply(Boom.notFound());
-                }
-
-                reply().code(204);
-            });
+        reply(cat);
+      });
+    },
+    config: {
+      validate: {
+        payload: {
+          upper: Joi.string().min(2).max(10).required(),
+          head: Joi.string().min(2).max(10).required(),
+          body: Joi.string().min(2).max(10).required(),
+          feet: Joi.string().min(2).max(10).required(),
         }
-    });
+      }
+    }
+  });
 
-    return next();
+  server.route({
+    method: 'PATCH',
+    path: '/cats/{id}',
+    handler: function (request, reply) {
+
+      db.cats.update({
+        _id: request.params.id
+      }, {
+        $set: request.payload
+      }, function (err, result) {
+
+        if (err) {
+          return reply(Boom.wrap(err, 'Internal MongoDB error'));
+        }
+
+        if (result.n === 0) {
+          return reply(Boom.notFound());
+        }
+
+        reply().code(204);
+      });
+    },
+    config: {
+      validate: {
+        payload: Joi.object({
+          upper: Joi.string().min(2).max(10).required(),
+          head: Joi.string().min(2).max(10).required(),
+          body: Joi.string().min(2).max(10).required(),
+          feet: Joi.string().min(2).max(10).required(),
+        }).required().min(1)
+      }
+    }
+  });
+
+  server.route({
+    method: 'DELETE',
+    path: '/cats/{id}',
+    handler: function (request, reply) {
+
+      db.cats.remove({
+        _id: request.params.id
+      }, function (err, result) {
+
+        if (err) {
+          return reply(Boom.wrap(err, 'Internal MongoDB error'));
+        }
+
+        if (result.n === 0) {
+          return reply(Boom.notFound());
+        }
+
+        reply().code(204);
+      });
+    }
+  });
+
+  return next();
 };
 
 exports.register.attributes = {
-    name: 'routes-cats'
+  name: 'routes-cats'
 };
